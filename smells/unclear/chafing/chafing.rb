@@ -1,16 +1,6 @@
 # Subject under test
 def pricing_for_code(code)
-  first_factor = 0
-  first_factor = 65 if code[0] == 'A'
-  first_factor = 55 if code[0] == '7'
-  first_factor = 40 if code[0] == '('
-
-  second_factor = 0
-  second_factor = 21 if code.size == 3
-  second_factor = 19 if code.size == 5
-  second_factor = 16 if code.size == 8
-
-  return first_factor * second_factor
+  code.codepoints.first * ((1000 - (code.length * 39.0)) / 42).round
 end
 
 # Test
@@ -18,27 +8,26 @@ require_relative "../../../support/ruby/generate_code"
 
 class Chafing < SmellTest
   def test_code_one_is_correct
-    code = GenerateCode.one()
+    code = '784'
 
     result = pricing_for_code(code)
 
-    assert_code_pricing code, result
+    assert_equal 1155, result
   end
 
   def test_code_two_is_correct
-    code = GenerateCode.two()
+    code = '(8xj)'
 
     result = pricing_for_code(code)
 
-    assert_code_pricing code, result
+    assert_equal 760, result
   end
 
   def test_code_three_is_correct
-    code = GenerateCode.three()
+    code = 'AAAABCDE'
 
     result = pricing_for_code(code)
 
-    assert_code_pricing code, result
+    assert_equal 1040, result
   end
 end
-

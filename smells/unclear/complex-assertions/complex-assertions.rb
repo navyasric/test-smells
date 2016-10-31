@@ -1,7 +1,8 @@
 # Subject under test
 
 def increment_age(people)
-  people.dup.map { |person|
+  people.map { |person|
+    person = person.dup
     if person.age.kind_of?(Fixnum)
       person.age += 1
     end
@@ -22,10 +23,7 @@ class ComplexAssertions < SmellTest
 
     results = increment_age(people)
 
-    jane = results.find { |person| person.name == "Jane" }
-    assert_equal 40, jane.age
-    john = results.find { |person| person.name == "John" }
-    assert_equal 100, john.age
+    assert_incremented_ages(people, results)
   end
 
   def test_increment_kids_age_too
@@ -42,10 +40,17 @@ class ComplexAssertions < SmellTest
 
     results = increment_age(people)
 
-    jack = results[0].kids.find { |person| person.name == "Jack" }
-    assert_equal 9, jack.age
-    jill = results[0].kids.find { |person| person.name == "Jill" }
-    assert_equal 8, jill.age
+    assert_incremented_ages(people, results)
   end
-end
 
+  def assert_incremented_ages(people, results)
+    people.each do |p|
+      result = results.find { |r| r.name == p.name }
+      if p.kids.kind_of?(Array)
+        assert_incremented_ages(p.kids, result.kids)
+      end
+      assert_equal p.age + 1, result.age
+    end
+  end
+
+end
