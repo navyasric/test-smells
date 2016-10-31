@@ -7,11 +7,13 @@ class ValidatesZip
   end
 
   def verify_cardholder_zip(card_id, zip)
+    get_address_for(card_id).zip === zip
+  end
+
+  def get_address_for(card_id)
     card = @repo.find(card_id)
     user = @repo.find(card.user_id)
     address = @repo.find(user.address_id)
-
-    address.zip === zip
   end
 end
 
@@ -24,6 +26,16 @@ class BuryTheLede < SmellTest
   end
 
   def test_true_if_zip_matches
+    address = OpenStruct.new(street: "123 Sesame", city: "Cbus", state: "OH", zip: 42)
+
+    @subject.stub(:get_address_for, address, [1]) do
+      result = @subject.verify_cardholder_zip(1, 42)
+
+      assert_equal true, result
+    end
+  end
+
+  def test_get_address_for
     address = OpenStruct.new(street: "123 Sesame", city: "Cbus", state: "OH", zip: 42)
     @repo.save(address)
     user = OpenStruct.new(
@@ -44,10 +56,9 @@ class BuryTheLede < SmellTest
     )
     @repo.save(card)
 
-    result = @subject.verify_cardholder_zip(card.id, 42)
-
-    assert_equal true, result
+    assert_equal address, @subject.get_address_for(card.id)
   end
+
 
   # Fake production implementations to simplify example test of subject
   class Repo
