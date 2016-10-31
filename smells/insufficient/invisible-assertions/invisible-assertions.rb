@@ -12,12 +12,18 @@ class InvisibleAssertions < SmellTest
   def test_is_21
     person = OpenStruct.new(age: 21)
 
-    is_21?(person)
+    assert_nothing_raised {  is_21?(person) }
+
   end
 
   def test_is_under_age
     person = OpenStruct.new(age: 20)
 
-    assert_raises { is_21?(person) }
+    error = assert_raises { is_21?(person) }
+    assert_equal 'Sorry, adults only!', error.message
+  end
+
+  def assert_nothing_raised
+    yield
   end
 end

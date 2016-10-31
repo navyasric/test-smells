@@ -10,6 +10,7 @@ GEM
       slop (~> 3.4)
     rake (11.3.0)
     slop (3.6.0)
+    timecop (0.8.1)
 
 PLATFORMS
   ruby
@@ -18,6 +19,7 @@ DEPENDENCIES
   minitest
   pry
   rake
+  timecop
 
 BUNDLED WITH
-   1.12.5
+   1.13.6
