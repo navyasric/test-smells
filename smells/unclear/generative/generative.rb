@@ -1,13 +1,22 @@
 # Subject under test
 def to_arabic(roman)
+  roman_to_arabic = {
+    "I" => 1,
+    "V" => 5,
+    "X" => 10
+  }
+
   roman.chars.each_with_index.map { |x, i|
     next_x = roman[i + 1]
-    if x == "I"
-      ["V", "X"].include?(next_x) ? -1 : 1
-    elsif x == "V"
-      next_x == "X" ? -5 : 5
-    elsif x == "X"
-      next_x == "C" ? -10 : 10
+
+    if roman_to_arabic[next_x].nil?
+      roman_to_arabic[x]
+    else
+      if roman_to_arabic[x] >= roman_to_arabic[next_x]
+        roman_to_arabic[x]
+      else
+        -roman_to_arabic[x]
+      end
     end
   }.reduce(:+)
 end
@@ -32,4 +41,5 @@ class Generative < SmellTest
       assert_equal result, arabic
     end
   end
+
 end
