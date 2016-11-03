@@ -14,31 +14,31 @@ end
 
 # Test
 class Indecisive < SmellTest
-  def test_simple_case
-    fragments = ["foo", "bar", "baz"]
+  def test_simple_case_on_windows
+    RbConfig::CONFIG.stub(:[], "mswin", ["host_os"]) do
+      fragments = ["foo", "bar", "baz"]
 
-    result = join_path(fragments)
-
-    if /mswin/ =~ RbConfig::CONFIG['host_os']
-      assert_equal "foo\\bar\\baz", result
-    else
-      assert_equal "foo/bar/baz", result
+      assert_equal "foo\\bar\\baz", join_path(fragments)
     end
   end
 
-  def test_contains_separators
-    if /mswin/ =~ RbConfig::CONFIG['host_os']
-      fragments = ["\\foo\\", "bar\\biz", "baz\\"]
-    else
-      fragments = ["/foo/", "bar/biz", "baz/"]
-    end
+  def test_simple_case_on_linux
+    fragments = ["foo", "bar", "baz"]
 
-    result = join_path(fragments)
+    assert_equal "foo/bar/baz", join_path(fragments)
+  end
 
-    if /mswin/ =~ RbConfig::CONFIG['host_os']
-      assert_equal "\\foo\\bar\\biz\\baz\\", result
-    else
-      assert_equal "/foo/bar/biz/baz/", result
+  def test_contains_separators_on_windows
+    RbConfig::CONFIG.stub(:[], "mswin", ["host_os"]) do
+      fragments = ["\\foo\\", "bar\\biz", "boo", "baz\\"]
+
+      assert_equal "\\foo\\bar\\biz\\boo\\baz\\", join_path(fragments)
     end
+  end
+
+  def test_contains_separators_on_linux
+    fragments = ["/foo/", "bar/biz", "boo", "baz/"]
+
+    assert_equal "/foo/bar/biz/boo/baz/", join_path(fragments)
   end
 end
